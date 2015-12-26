@@ -94,6 +94,15 @@ AllWorld= union(poc.data$Host.Country,poc.data$Origin)
 RestWorld= setdiff(AllWorld,c(Europe, MiddleEast, NorthAfrica))
 
 
+#### Using Yeearly  data -------------------------------------
+
+# get the asylum seekers out of Syria
+yearly.asyl_seek.from_Syria= yearly.asyl_seek[Origin==Syria,]
+
+# find the region of the host country
+yearly.asyl_seek.from_Syria
+
+
 #### Using POC data -------------------------------------
 
 # --- extract yearly data of refugees from Syria
@@ -139,8 +148,10 @@ poc.from_Syria.to_RestWorld.2014= poc.from_Syria.to_RestWorld[Year==2014]
 
 #---  Data to display  --------------------------------------------------
 refugees.host_areas= data.frame(
-  GeoArea= c(Syria, Syria_Neighbors_Name, Rest_Middle_East_Name,
-             North_Africa_Name, Europe_Name, Rest_World_Name),
+  GeoArea= factor(c(Syria, Syria_Neighbors_Name, Rest_Middle_East_Name,
+                    North_Africa_Name, Europe_Name, Rest_World_Name),
+                  levels = c(Syria, Syria_Neighbors_Name, Rest_Middle_East_Name,
+                             North_Africa_Name, Europe_Name, Rest_World_Name) ) ,
   Refugees= c(poc.from_Syria.2014[,sum(Internally.displaced.persons..IDPs.)],
               poc.from_Syria.to_Neighbors.2014[,sum(Refugees)],
               poc.from_Syria.to_RestMiddleEast.2014[,sum(Refugees)],
@@ -161,8 +172,16 @@ refugees.host_areas= data.frame(
                       poc.from_Syria.to_Europe.2014[,sum(Total.Population)],
                       poc.from_Syria.to_RestWorld.2014[,sum(Total.Population)] ) )
 
-row.names(refugees.host_areas)=c(Syria, Syria_Neighbors_Name, Rest_Middle_East_Name,
-                                  North_Africa_Name, Europe_Name, Rest_World_Name)
+# row.names(refugees.host_areas)=c(Syria, Syria_Neighbors_Name, Rest_Middle_East_Name,
+#                                   North_Africa_Name, Europe_Name, Rest_World_Name)
+
+refugees.host_areas$Refugees.pc= refugees.host_areas$Refugees*100/sum(refugees.host_areas$Refugees)
+refugees.host_areas$AsylSeek.pc= refugees.host_areas$Asylum.seekers*100/sum(refugees.host_areas$Asylum.seekers)
+refugees.host_areas$TotPop.pc= refugees.host_areas$Total.Population*100/sum(refugees.host_areas$Total.Population)
+
+refugees.host_areas$GeoArea= factor(refugees.host_areas$GeoArea,
+                                    levels = c("Syrian Arab Rep.", "Syria Neighbors", "Rest of Middle East",
+                                               "North Africa", "Europe", "Rest of the World"))
 
 
 
