@@ -172,16 +172,16 @@ refugees.host_areas= data.frame(
                       poc.from_Syria.to_Europe.2014[,sum(Total.Population)],
                       poc.from_Syria.to_RestWorld.2014[,sum(Total.Population)] ) )
 
-# row.names(refugees.host_areas)=c(Syria, Syria_Neighbors_Name, Rest_Middle_East_Name,
-#                                   North_Africa_Name, Europe_Name, Rest_World_Name)
+row.names(refugees.host_areas)=c(Syria, Syria_Neighbors_Name, Rest_Middle_East_Name,
+                                  North_Africa_Name, Europe_Name, Rest_World_Name)
 
 refugees.host_areas$Refugees.pc= refugees.host_areas$Refugees*100/sum(refugees.host_areas$Refugees)
 refugees.host_areas$AsylSeek.pc= refugees.host_areas$Asylum.seekers*100/sum(refugees.host_areas$Asylum.seekers)
 refugees.host_areas$TotPop.pc= refugees.host_areas$Total.Population*100/sum(refugees.host_areas$Total.Population)
 
-refugees.host_areas$GeoArea= factor(refugees.host_areas$GeoArea,
-                                    levels = c("Syrian Arab Rep.", "Syria Neighbors", "Rest of Middle East",
-                                               "North Africa", "Europe", "Rest of the World"))
+# refugees.host_areas$GeoArea= factor(refugees.host_areas$GeoArea,
+#                                     levels = c("Syrian Arab Rep.", "Syria Neighbors", "Rest of Middle East",
+#                                                "North Africa", "Europe", "Rest of the World"))
 
 
 

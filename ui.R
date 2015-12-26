@@ -47,19 +47,42 @@ issue_description= function (){
 
 analysis_description= function () {
 
-  refugees_histogram= function() {
-    fluidRow(
+  refugees_bar.pie_Chart= function() {
+
+    introduction= function() {
+      column(width=9, offset = 1,
+        p("The first question to ask is where are the refugees really?"),
+        p("The data source that I use: UN... has outdated data referring to 2014,  but this data is summarized below."),
+        p("Since, our interest is to see the proportion of refugees in Europe vs the \"Arabic World\",  the graphs
+          distinguishes the refugees in the Geographic Europe,  the one still in Syria, in Syria's neighboring countries,
+          in the rest of Middle East (including Israel), North Africa and the Rest of the World."),
+        h4("How to read the graph (Instructions)"),
+        p("Broadly speaking there are two types of refugees. Refugeees proper that seek temporary refuge,
+          and asylum seekers look for the permission to live in another country.  By selecting Refugees or Asylum Seekers
+          it is possible to visualize how many members of the two categories are in the diverse regions of the World."),
+        p("A second selection is between \"Pie Chart\" and \"Bar Chart\" to select different types of graphs.
+          Pie charts give a better intuition of proportions between amounts.  Bar charts give a better understanding
+          of the corresponding amounts."),
+        h4("A Note of Caution"),
+        p("Whether to seek asylum or not depends on a lot of different issues,  including labor permit,  or alternative
+          ways to live in a given country.  The fact that asylum seeking is so high in Europe compared to other places
+          does not mean that refugees coming to Europe intend to stay for eveer.") )
+    }
+
+    chart= function() {
       fluidRow(
         column(width=3,
                wellPanel(
-                 checkboxGroupInput("hgrm1",
-                                    label = h3("Data to display"),
-                                    choices = list("Refugees" = 1,
-                                                   "Asylum Seekers" = 2,
-                                                   # "Internally displaced" = 3,
-                                                   "Total Population"= 4),
-                                    selected = c(1,2,4) ),  # c(1,2,3,4) ),
-
+                 radioButtons("bar.pie",
+                              label = h3("Select Chart Type"),
+                              choices = list("Pie chart" = 1, "Bar Chart" = 2),
+                              selected = 1),
+                 radioButtons("refugees.asylum",
+                              label = h3("Select Data Type"),
+                              choices = list("Refugees" = 1, "Asylum Seekers"  = 2),
+                              selected =1) )),
+        column(width=3,
+               wellPanel(
                  checkboxGroupInput("area",
                                     label = h3("Region to display"),
                                     choices = list("Syria"= Syria,
@@ -72,24 +95,16 @@ analysis_description= function () {
                                       Syria, "Syria Neighbors", "Rest of Middle East",
                                       "North Africa", "Europe", "Rest of the World") ) ) ),
         column(6, mainPanel(
-          showOutput("RefugeesBarChart", "Highcharts")
-          ) ) ),
-      fluidRow(
-        column(width=4,
-               h4("How to use"),
-               p("Chcke and uncheck the bodxes
-                 to visualize different aspects of the data") ),
-        column(width=4,
-               h4("How to read the chart"),
-               p("The data distinguishes the refugees from the asylum seekers.
-                 Refugees seek temporary refuge,  asylum seekers look for a (somewhat) permanent solution.
-                 Note that the data does not say why in some areas refugees do not seek asylum:
-                 For example: if Syrians can live in arabic
-                 without asking for asylum then the corresponding values are low") ) ) )
+          plotOutput("RefugeesChart",height = 400)
+        ) ) ) }
+
+    fluidRow(
+      introduction(),
+      chart() )
   }
 
   column(width=10, #,offset = 1,
-         refugees_histogram() )
+         refugees_bar.pie_Chart() )
 }
 
 geography_description= function () {

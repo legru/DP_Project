@@ -4,11 +4,12 @@
 #
 # http://shiny.rstudio.com
 #
-require(rCharts)
+#require(rCharts)
 library(shiny)
+library(ggplot2)
 
 
-## import modules
+## import modules ----------------------------------------------
 
 # additional geographic names
 source("geography.R")
@@ -16,29 +17,90 @@ source("geography.R")
 # data processing functions
 source("data_processing.R")
 
+## Definition of Plotting functions -----------------------------
+
+refugees_chart= function(data, column, showAsPie=T) {
+
+  pieChart= function(data, column) {
+    pie =
+      if (column=="Refugees") {
+        ggplot(data = data, #refugees.host_areas,
+               aes(x = factor(1),
+                   y = Refugees.pc,
+                   fill= GeoArea ) ) }
+    else {
+      ggplot(data = data, #refugees.host_areas,
+             aes(x = factor(1),
+                 y = AsylSeek.pc,
+                 fill= GeoArea ) ) }
+    pie = pie + geom_bar(stat="identity")
+    pie = pie + coord_polar(theta="y")
+    xlab(""); ylab("")
+    pie
+  }
+
+  barChart= function(data, column) {
+    # set aestetic
+    chart =
+      if (column=="Refugees") {
+        ggplot(data = data, #refugees.host_areas,
+               aes(x = GeoArea, #as.factor(GeoArea), #factor(1),
+                   y = Refugees,
+                   fill= GeoArea ) ) }
+    else {
+      ggplot(data = data, #refugees.host_areas,
+             aes(x = GeoArea, #as.factor(GeoArea), #factor(1),
+                 y = Asylum.seekers,
+                 fill= GeoArea ) ) }
+    # add layers
+    chart = chart + geom_bar(stat="identity")
+    chart = chart + theme(axis.text.x=element_text(angle=-90))
+    chart = chart + xlab("")
+    chart = chart + ylab( if (column=="Refugees") "Number of Refugees"
+                          else "Number of Asylum Seekers" )
+    chart
+  }
+
+  chart=
+    if (showAsPie) {pieChart(data,column)}
+  else {barChart(data,column)}
+
+  chart
+}
+
 shinyServer(function(input, output) {
 
   # generate the graph
-  output$RefugeesBarChart <- renderChart2( {  ## <- IMPORTANT HERE: use renderChart2
-    # within the reactive context of the first histogram
+  output$RefugeesChart <- renderPlot( {
+    # within the reactive context of the refugees chart
 
-    # column selection
-    if (!(1 %in% input$hgrm1)) { refugees.host_areas$Refugees=NULL }
-    if (!(2 %in% input$hgrm1)) { refugees.host_areas$Asylum.seekers=NULL }
-    # if (!(3 %in% input$hgrm1)) { refugees.host_areas$Internally.displaced=NULL }
-    if (!(4 %in% input$hgrm1)) { refugees.host_areas$Total.Population=NULL }
+    # select chart type
+    showAsPie=T
+    # set the type of plot
+    if (input$bar.pie==1) {
+      # Pie chart selected
+      showAsPie=T
+    } else {
+      # bar chart selected
+      showAsPie=F
+    }
+
+    # select data type
+    column="Refugees"
+    # set the type of plot
+    if (input$refugees.asylum==1) {
+      # Refugees selected
+      column="Refugees"
+    } else {
+      # Asylum.seekers selected
+      column="Asylum.seekers"
+    }
 
     # rows selection
     refugees.host_areas= refugees.host_areas[input$area,]
 
     # graph preparation
-    host_areas.chart <- Highcharts$new()
-    host_areas.chart$chart(type = "column")
-    host_areas.chart$title(text = "Distribution of Refugees by Geographic Area (in 2014)")
-    host_areas.chart$xAxis(categories = rownames(refugees.host_areas))
-    host_areas.chart$yAxis(title = list(text = "Number of Refugees"))
-    host_areas.chart$data(refugees.host_areas)
-    host_areas.chart$legend(symbolWidth = 80)
-    return(host_areas.chart)
+    refugees.chart= refugees_chart(refugees.host_areas[input$area,], column, showAsPie)
+    return(refugees.chart)
  } )
 })
