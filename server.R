@@ -35,7 +35,8 @@ refugees_chart= function(data, column, showAsPie=T) {
                  fill= GeoArea ) ) }
     pie = pie + geom_bar(stat="identity")
     pie = pie + coord_polar(theta="y")
-    xlab(""); ylab("")
+    pie = pie + theme(legend.text=element_text(size=15))
+    pie = pie + xlab("") + ylab("")
     pie
   }
 
@@ -54,10 +55,13 @@ refugees_chart= function(data, column, showAsPie=T) {
                  fill= GeoArea ) ) }
     # add layers
     chart = chart + geom_bar(stat="identity")
-    chart = chart + theme(axis.text.x=element_text(angle=-90))
-    chart = chart + xlab("")
-    chart = chart + ylab( if (column=="Refugees") "Number of Refugees"
-                          else "Number of Asylum Seekers" )
+    chart = chart + theme(axis.text.x=element_text(angle=-90,
+                                                   size = 12,
+                                                   colour = "black"),
+                          legend.text=element_text(size=16),
+                          legend.title=NULL)
+    chart = chart + xlab("") + ylab( if (column=="Refugees") "Number of Refugees"
+                                     else "Number of Asylum Seekers" )
     chart
   }
 
@@ -102,5 +106,5 @@ shinyServer(function(input, output) {
     # graph preparation
     refugees.chart= refugees_chart(refugees.host_areas[input$area,], column, showAsPie)
     return(refugees.chart)
- } )
+  } )
 })
