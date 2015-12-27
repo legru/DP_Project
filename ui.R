@@ -4,108 +4,79 @@ library(shinythemes)
 
 source("geography.R")
 
-issue_description= function (){
+issue_description= function () {
   fluidRow(
     fluidRow(
       column(width = 6, offset = 1,
              p("The war in Syria is  producing an immense humanitaria  catastrophy. Millions of people are
                  displaced from their homes."),
-             p("Images  coming from the EU borders give the  impression  of  a huge  amount of people moving
+             p("Images  coming from the EU borders show  a huge  amount of people moving
                  desperatly towrds  Europe.  There is the impression that our noral life will be overrun by the wave
                  of refugees,"),
+             br(),
+             h2("Below is presentd data provided by unhcr.org. UNHCR is the UN Refugees Agency"),
+             p("By clicking on the shaded controls you can visualize different aspects of the data,
+               and answer questions such as \"Where are the Syrian Refugees?\", \"How many are them?\", etc.
+               "),
              br() ),
       column(width=2,# offset = 1,
-             img(src = "Wave.jpg",height = 200)) ),
-    br(),
+             img(src = "Wave.jpg",height = 200) ) ) ) }
+
+refugees_bar.pie_Chart= function() {
+
+  display_control= function (instructions, control){
     fluidRow(
-      column(width = 6,offset = 1,
-             p("Some think that it is a moral  imperative  to  host  the Syrian  refugees.  But many still
-                 wonder: Why  are they  coming  here?  Can somebody else host them? "),
-             p("... and some still think that we need to close ourselves and protect us against this wave
-                 of people comming.  We need a fortress Europe"),
-             h3("In this  simple project..."),
-             p("...I want  to look  at  data  to understand the situation a bit better"),
-             p("I will look at questions such as..."),
-             tags$ul(
-               tags$li( p("Where are the Syrian refugess really?") ),
-               tags$li( p("How many  of them  come to  Europe?") ),
-               tags$li( p("How many  of them do  go to  other Arab countries?") )
-             ),
-             br(),
-             p("I have no pretence to give any political answer to the issue, nor to prove a point,  but I hope
-                 to build a web app that allows to look at the data and understand it."),
-             h2("Data"),
-             p("Although the analysis presented here is quite simplistic, the data was downloaded
-                 from unhcr.org which is the web site of UNHCR: the UN Refugees Agency"),
-             br(),
-             br() ),
-      column(3,
-             img(src = "Police.jpg",height = 450))
-    ) )
+      tags$em(
+        tags$small( instructions ) ),
+      wellPanel( control ) ) }
 
-}
-
-analysis_description= function () {
-
-  refugees_bar.pie_Chart= function() {
-
-    introduction= function() {
-      column(width=9, offset = 1,
-        p("The first question to ask is where are the refugees really?"),
-        p("The data source that I use: UN... has outdated data referring to 2014,  but this data is summarized below."),
-        p("Since, our interest is to see the proportion of refugees in Europe vs the \"Arabic World\",  the graphs
-          distinguishes the refugees in the Geographic Europe,  the one still in Syria, in Syria's neighboring countries,
-          in the rest of Middle East (including Israel), North Africa and the Rest of the World."),
-        h4("How to read the graph (Instructions)"),
-        p("Broadly speaking there are two types of refugees. Refugeees proper that seek temporary refuge,
-          and asylum seekers look for the permission to live in another country.  By selecting Refugees or Asylum Seekers
-          it is possible to visualize how many members of the two categories are in the diverse regions of the World."),
-        p("A second selection is between \"Pie Chart\" and \"Bar Chart\" to select different types of graphs.
-          Pie charts give a better intuition of proportions between amounts.  Bar charts give a better understanding
-          of the corresponding amounts."),
-        h4("A Note of Caution"),
-        p("Whether to seek asylum or not depends on a lot of different issues,  including labor permit,  or alternative
-          ways to live in a given country.  The fact that asylum seeking is so high in Europe compared to other places
-          does not mean that refugees coming to Europe intend to stay for eveer.") )
-    }
-
-    chart= function() {
-      fluidRow(
-        column(width=3,
-               wellPanel(
-                 radioButtons("bar.pie",
-                              label = h3("Select Chart Type"),
-                              choices = list("Pie chart" = 1, "Bar Chart" = 2),
-                              selected = 1),
-                 radioButtons("refugees.asylum",
-                              label = h3("Select Data Type"),
-                              choices = list("Refugees" = 1, "Asylum Seekers"  = 2),
-                              selected =1) )),
-        column(width=3,
-               wellPanel(
-                 checkboxGroupInput("area",
-                                    label = h3("Region to display"),
-                                    choices = list("Syria"= Syria,
-                                                   "Syria Neighbors"= "Syria Neighbors",
-                                                   "Rest of Middle East"= "Rest of Middle East",
-                                                   "North Africa" = "North Africa",
-                                                   "Europe" = "Europe",
-                                                   "Rest of the World"= "Rest of the World"),
-                                    selected = c(
-                                      Syria, "Syria Neighbors", "Rest of Middle East",
-                                      "North Africa", "Europe", "Rest of the World") ) ) ),
-        column(6, mainPanel(
-          plotOutput("RefugeesChart",height = 400)
-        ) ) ) }
-
+  chart= function() {
     fluidRow(
-      introduction(),
-      chart() )
-  }
+      column(width=3, offset = 1,
 
-  column(width=10, #,offset = 1,
-         refugees_bar.pie_Chart() )
-}
+             display_control( tags$div( p("Here you can selct how to visualize the data."),
+                                        tags$ul(
+                                          tags$li(p("Pie charts give a better intuition of proportions.")),
+                                          tags$li(p(" Bar charts show better the corresponding amounts.")) )  ),
+                              radioButtons("bar.pie",
+                                           label = h3("Select Chart Type"),
+                                           choices = list("Pie chart" = 1, "Bar Chart" = 2),
+                                           selected = 1) ),
+
+             display_control(tags$div( p("Looking at data in detail"),
+                                       tags$ul(
+                                         tags$li(p("Refugeees gives a count of peple seeking temporary refuge")),
+                                         tags$li(p("Asylum seekers look for the permission to live in another country") ) ) ),
+                             radioButtons("refugees.asylum",
+                                          label = h3("Select Data Type"),
+                                          choices = list("Refugees" = 1, "Asylum Seekers"  = 2),
+                                          selected =1) ) ),
+
+      column(width=3,
+             display_control( tags$div(p("Here you can compare data from different regions"),
+                                       tags$ul(
+                                         tags$li("Syria provides the count of internally displaced people"),
+                                         tags$li("Syria Neighbors counts refugees in Syria's bordering countries"),
+                                         tags$li("Rest of Middle East counts refugees in the rest of the Middle East"),
+                                         tags$li("North Africa counts refugees in North African countries"),
+                                         tags$li("Europe counts refugees in Europe"),
+                                         tags$li("Rest of the World counts refugees in the rest of the World combined") ) ),
+                              checkboxGroupInput("area",
+                                                 label = h3("Region to display"),
+                                                 choices = list("Syria"= Syria,
+                                                                "Syria Neighbors"= "Syria Neighbors",
+                                                                "Rest of Middle East"= "Rest of Middle East",
+                                                                "North Africa" = "North Africa",
+                                                                "Europe" = "Europe",
+                                                                "Rest of the World"= "Rest of the World"),
+                                                 selected = c(
+                                                   Syria, "Syria Neighbors", "Rest of Middle East",
+                                                   "North Africa", "Europe", "Rest of the World") ) ) ),
+
+      column(5, mainPanel(
+        plotOutput("RefugeesChart",height = 600,width = 600) ) ) ) }
+
+  chart() }
 
 geography_description= function () {
 }
@@ -132,18 +103,17 @@ about_description= function() {
 
 shinyUI(fluidPage(
   theme = "bootstrap.css",#shinytheme("readable"),
-  fluidRow(
+  column(width=11,offset=1,
     img(src= "Migrants2.png",
-        hight= 50)),
+        hight= 1050)),
 
   titlePanel(title= "Where are the Syrian refugees going?"),
   tabsetPanel(
     tabPanel(tags$strong("Issue"),
-             issue_description() ),
-    tabPanel("Analysis",
-             analysis_description() ),
-    tabPanel("Geography",
-             geography_description() ),
+             tags$div(
+               issue_description(),
+               br(),
+               refugees_bar.pie_Chart() ) ),
     tabPanel("Sources",
              sources_description() ),
     tabPanel("About Project",
